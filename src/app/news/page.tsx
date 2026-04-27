@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { RssThumb } from "@/components/rss-thumb";
 import { FEEDS } from "@/lib/feeds";
 import { fetchAllFeeds } from "@/lib/rss";
 import { getCategoryBySlug } from "@/lib/taxonomy";
@@ -91,6 +92,15 @@ export default async function NewsPage() {
                       key={`${it.sourceId}-${it.id}`}
                       className="group rounded-2xl border border-white/10 bg-white/5 px-6 py-5 hover:border-white/20 hover:bg-white/10 transition"
                     >
+                      <div className="flex gap-5">
+                        <div className="hidden sm:block w-36 shrink-0">
+                          <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-[radial-gradient(800px_circle_at_20%_20%,rgba(225,6,0,0.22),transparent_60%),linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]">
+                            <RssThumb src={it.imageUrl} />
+                            <div className="absolute inset-0 ring-1 ring-inset ring-white/10" />
+                          </div>
+                        </div>
+
+                        <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span
                           className={`rounded-full border border-white/10 px-2.5 py-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.22em] text-zinc-200 ${badgeClass(
@@ -132,6 +142,8 @@ export default async function NewsPage() {
                         >
                           <span className="za-link">Read at source</span>
                         </Link>
+                      </div>
+                        </div>
                       </div>
                     </article>
                   ))}

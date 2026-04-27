@@ -61,6 +61,18 @@ function pickImageUrl(item: any): string | undefined {
     return String(enclosure["@_url"]);
   }
 
+  // media:thumbnail
+  const thumb = item?.["media:thumbnail"];
+  if (thumb?.["@_url"]) return String(thumb["@_url"]);
+  if (Array.isArray(thumb)) {
+    const u = thumb.map((t: any) => t?.["@_url"]).filter(Boolean).map(String)[0];
+    if (u) return u;
+  }
+
+  // itunes:image
+  const itunes = item?.["itunes:image"];
+  if (itunes?.["@_href"]) return String(itunes["@_href"]);
+
   // media:content
   const media = item?.["media:content"];
   if (media) {
@@ -144,7 +156,7 @@ export async function fetchRssItems(opts: {
       url,
       publishedAt,
       excerpt,
-      imageUrl,
+      imageUrl: imageUrl?.startsWith("//") ? `https:${imageUrl}` : imageUrl,
       categoryHint: opts.categoryHint,
     };
   });
