@@ -1,9 +1,10 @@
 import Link from "next/link";
 
-import { RssThumb } from "@/components/rss-thumb";
+import { NewsThumb } from "@/components/news-thumb";
 import { FEEDS } from "@/lib/feeds";
 import { fetchAllFeeds } from "@/lib/rss";
 import { getCategoryBySlug } from "@/lib/taxonomy";
+import { format } from "date-fns";
 
 function badgeClass(sourceId: string) {
   // small visual variation across sources
@@ -15,11 +16,14 @@ function badgeClass(sourceId: string) {
   return hues[idx];
 }
 
+export const revalidate = 0;
+
 export default async function NewsPage() {
   const items = await fetchAllFeeds(FEEDS, {
     perFeedLimit: 12,
-    revalidateSeconds: 600,
+    revalidateSeconds: 0,
   });
+  const edition = format(new Date(), "EEE, d MMM yyyy");
 
   return (
     <div className="flex-1 za-grain">
@@ -35,9 +39,8 @@ export default async function NewsPage() {
             Newsroom Wire
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-300/95">
-            Real headlines pulled from RSS sources (updated every ~10 minutes).
-            Click “Read at source” to view the full story on the publisher’s
-            site.
+            Headlines are pulled from public RSS feeds. Use “Read at source” to
+            open the publisher’s full article.
           </p>
           <div className="mt-8 h-px w-full bg-white/10" />
         </header>
@@ -50,7 +53,7 @@ export default async function NewsPage() {
                   Sources
                 </h2>
                 <p className="mt-2 text-sm leading-7 text-zinc-300/95">
-                  Replace these with your preferred publishers anytime.
+                  Active wire feeds
                 </p>
                 <div className="mt-5 space-y-3">
                   {FEEDS.map((f) => (
@@ -66,24 +69,14 @@ export default async function NewsPage() {
                   ))}
                 </div>
               </div>
-
-              <div className="mt-5 rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(225,6,0,0.18),rgba(255,255,255,0.04))] p-6">
-                <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.28em] text-zinc-200">
-                  Newspaper-style layout
-                </p>
-                <p className="mt-3 text-sm leading-7 text-zinc-200/95">
-                  This page is built like a wire service: strong hierarchy,
-                  dense headlines, and fast scanning—BBC-like red accents on
-                  ink-black.
-                </p>
-              </div>
             </aside>
 
             <div className="lg:col-span-8">
               {items.length === 0 ? (
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-zinc-300">
-                  No items loaded. Some feeds block requests occasionally—try
-                  refreshing, or swap to different RSS sources.
+                  No headlines were loaded. This usually means the server could
+                  not reach the RSS sources from your network—try again in a
+                  few minutes, or run locally with an internet connection.
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -94,10 +87,7 @@ export default async function NewsPage() {
                     >
                       <div className="flex gap-5">
                         <div className="hidden sm:block w-36 shrink-0">
-                          <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-[radial-gradient(800px_circle_at_20%_20%,rgba(225,6,0,0.22),transparent_60%),linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]">
-                            <RssThumb src={it.imageUrl} />
-                            <div className="absolute inset-0 ring-1 ring-inset ring-white/10" />
-                          </div>
+                          <NewsThumb src={it.imageUrl} label={it.sourceName} />
                         </div>
 
                         <div className="min-w-0 flex-1">
@@ -156,10 +146,10 @@ export default async function NewsPage() {
         <footer className="pb-12">
           <div className="flex flex-col gap-3 border-t border-white/10 pt-8 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
             <p>
-              <span className="text-zinc-200">ZoomAfrica</span> — live RSS wire.
+              <span className="text-zinc-200">ZoomAfrica</span> — wire desk.
             </p>
             <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.28em]">
-              Accent: <span className="text-[color:var(--za-red)]">Red</span> • Base: Black
+              {edition}
             </p>
           </div>
         </footer>

@@ -1,17 +1,21 @@
 import Link from "next/link";
-import { ArrowRight, Flame, Leaf, Trophy } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { getFeaturedPosts, getLatestPosts } from "@/lib/posts";
 import { CATEGORIES } from "@/lib/taxonomy";
 import { FEEDS } from "@/lib/feeds";
 import { fetchAllFeeds } from "@/lib/rss";
+import { format } from "date-fns";
+
+export const revalidate = 0;
 
 export default async function Home() {
   const featured = getFeaturedPosts();
   const latest = getLatestPosts(9);
-  const wire = await fetchAllFeeds(FEEDS.slice(0, 3), {
+  const wire = await fetchAllFeeds(FEEDS, {
     perFeedLimit: 6,
-    revalidateSeconds: 600,
+    revalidateSeconds: 0,
   });
+  const edition = format(new Date(), "EEE, d MMM yyyy");
 
   return (
     <div className="flex-1 za-grain">
@@ -22,54 +26,21 @@ export default async function Home() {
               <div className="flex items-start justify-between gap-6">
                 <div>
                   <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.28em] text-zinc-400">
-                    ZoomAfrica • Showcase newsroom
+                    Today’s front page
                   </p>
                   <h1 className="mt-3 font-[family-name:var(--font-display)] text-5xl leading-[0.92] tracking-wide sm:text-6xl">
                     Africa, in sharp focus.
                   </h1>
+                  <p className="mt-2 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.24em] text-zinc-400">
+                    {edition}
+                  </p>
                   <p className="mt-4 max-w-2xl text-zinc-300/95 leading-7">
-                    A red-and-black editorial experience designed for impact:
-                    fast, modern, and easy to extend with real news content.
+                    Real headlines from public RSS sources—presented in a
+                    newspaper front-page layout, with a BBC-style red on black
+                    look.
                   </p>
                 </div>
-                <div className="hidden sm:grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm text-zinc-200">
-                      <Flame className="h-4 w-4 text-[color:var(--za-red)]" />
-                      Breaking-style hero
-                    </div>
-                    <p className="mt-1 text-xs text-zinc-400">
-                      Dramatic typographic lead.
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm text-zinc-200">
-                      <Leaf className="h-4 w-4 text-[color:var(--za-red)]" />
-                      Climate + nature
-                    </div>
-                    <p className="mt-1 text-xs text-zinc-400">
-                      Clean, readable stories.
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm text-zinc-200">
-                      <Trophy className="h-4 w-4 text-[color:var(--za-red)]" />
-                      Sports coverage
-                    </div>
-                    <p className="mt-1 text-xs text-zinc-400">
-                      Fast category browsing.
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm text-zinc-200">
-                      <ArrowRight className="h-4 w-4 text-[color:var(--za-red)]" />
-                      SEO-ready
-                    </div>
-                    <p className="mt-1 text-xs text-zinc-400">
-                      Metadata + sitemap setup.
-                    </p>
-                  </div>
-                </div>
+                <div className="hidden sm:block" />
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -103,7 +74,7 @@ export default async function Home() {
                   Breaking
                 </span>
                 <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-zinc-300">
-                  Live headlines (RSS)
+                  Live wire
                 </p>
               </div>
               <Link
@@ -113,6 +84,13 @@ export default async function Home() {
                 <span className="za-link">Open wire</span>
               </Link>
             </div>
+            {wire.length === 0 ? (
+              <p className="mt-4 text-sm text-zinc-300/95">
+                No headlines were loaded from RSS right now. Check your network
+                or open <span className="text-zinc-200">/news</span> to retry in
+                a few minutes.
+              </p>
+            ) : null}
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               {wire.slice(0, 6).map((it) => (
                 <Link
@@ -205,34 +183,17 @@ export default async function Home() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(225,6,0,0.18),rgba(255,255,255,0.04))] p-6">
-              <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.28em] text-zinc-200">
-                Client demo note
-              </p>
-              <p className="mt-3 text-sm leading-6 text-zinc-200/95">
-                This build uses local Markdown content now, but it’s structured
-                to swap in a CMS (Sanity, Strapi, WordPress, or a custom API)
-                with minimal UI changes.
-              </p>
-              <Link
-                href="/about"
-                className="mt-4 inline-flex items-center gap-2 text-sm text-white"
-              >
-                <span className="za-link">About ZoomAfrica</span>
-                <ArrowRight className="h-4 w-4 text-[color:var(--za-red)]" />
-              </Link>
-            </div>
           </aside>
         </section>
 
         <footer className="mt-14 pb-10">
           <div className="flex flex-col gap-3 border-t border-white/10 pt-8 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
             <p>
-              <span className="text-zinc-200">ZoomAfrica</span> — showcase
-              newsroom experience.
+              <span className="text-zinc-200">ZoomAfrica</span> — an African news
+              experience.
             </p>
             <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.28em]">
-              Red / Black Editorial UI
+              {edition}
             </p>
           </div>
         </footer>

@@ -54,6 +54,65 @@ function pickText(v: unknown): string | undefined {
   return undefined;
 }
 
+function normalizeUrl(url: string) {
+  const u = url.trim();
+  if (!u) return u;
+  if (u.startsWith("//")) return `https:${u}`;
+  return u;
+}
+
+function pickLink(item: any): string | undefined {
+  // Common RSS/Atom cases:
+  // - <link>https://...</link>
+  // - <link rel="alternate" type="text/html" href="..."/>
+  // - <id>urn:... or https://... (Atom)
+  const direct = pickText(item?.link) ?? pickText(item?.guid);
+  if (direct) return direct;
+
+  const linkObj = item?.link;
+  if (Array.isArray(linkObj)) {
+    const preferred = linkObj.find((l: any) => {
+      const rel = l?.["@_rel"];
+      const type = l?.["@_type"] ?? "";
+      return (!rel || rel === "alternate") && String(type).includes("html");
+    });
+    const href = preferred?.["@_href"] ?? linkObj[0]?.["@_href"];
+    if (href) return String(href);
+  } else if (linkObj && typeof linkObj === "object" && linkObj["@_href"]) {
+    return String(linkObj["@_href"]);
+  }
+
+  const id = pickText(item?.id);
+  if (id && /^https?:\/\//i.test(id)) return id;
+  return undefined;
+}
+
+function extractItemsFromParsedXml(data: any): any[] {
+  if (!data) return [];
+
+  // RSS 2.0
+  const channelItems = data?.rss?.channel?.item;
+  if (channelItems) return arrify(channelItems);
+
+  // Some feeds: nested channel missing (rare)
+  const topItems = data?.rss?.item;
+  if (topItems) return arrify(topItems);
+
+  // Atom
+  const atomEntries = data?.feed?.entry;
+  if (atomEntries) return arrify(atomEntries);
+
+  // RDF (limited support)
+  const rdfItems = data?.rdf?.RDF?.item;
+  if (rdfItems) return arrify(rdfItems);
+
+  // RSS 1.0 sometimes uses rdf:item under channel; try a couple paths
+  const rdfChannelItems = data?.rdf?.RDF?.channel?.item;
+  if (rdfChannelItems) return arrify(rdfChannelItems);
+
+  return [];
+}
+
 function pickImageUrl(item: any): string | undefined {
   // RSS enclosure
   const enclosure = item?.enclosure;
@@ -101,11 +160,13 @@ export async function fetchRssItems(opts: {
   limit?: number;
   revalidateSeconds?: number;
 }): Promise<RssItem[]> {
+  const revalidate = opts.revalidateSeconds ?? 0;
   const res = await fetch(opts.url, {
-    // Next.js caching on the server
-    next: { revalidate: opts.revalidateSeconds ?? 600 },
+    // Default to fresh fetches: partial feed outages are common, and a cached empty
+    // result would look like “no news at all” for a long time.
+    next: { revalidate },
     headers: {
-      "user-agent": "ZoomAfrica Showcase (+https://zoomafrica.example)",
+      "user-agent": "ZoomAfrica/1.0",
       accept: "application/rss+xml, application/xml, text/xml, */*",
     },
   });
@@ -120,23 +181,18 @@ export async function fetchRssItems(opts: {
     return [];
   }
 
-  const channel = data?.rss?.channel ?? data?.feed ?? data?.rdf?.RDF?.channel;
-  const items = arrify(channel?.item ?? channel?.entry);
+  const items = extractItemsFromParsedXml(data);
   const limit = opts.limit ?? 20;
 
   return items.slice(0, limit).map((item: any) => {
     const titleRaw = pickText(item?.title) ?? "Untitled";
-    const linkRaw =
-      pickText(item?.link) ??
-      pickText(item?.id) ??
-      item?.link?.["@_href"] ??
-      item?.link?.["@_url"];
-
-    const url = typeof linkRaw === "string" ? linkRaw : "";
+    const linkRaw = pickLink(item) ?? pickText(item?.id);
+    const url = normalizeUrl(typeof linkRaw === "string" ? linkRaw : "");
     const publishedAt =
       pickText(item?.pubDate) ??
       pickText(item?.published) ??
-      pickText(item?.updated);
+      pickText(item?.updated) ??
+      pickText(item?.["dc:date"]);
 
     const descRaw =
       pickText(item?.description) ??
@@ -159,27 +215,30 @@ export async function fetchRssItems(opts: {
       imageUrl: imageUrl?.startsWith("//") ? `https:${imageUrl}` : imageUrl,
       categoryHint: opts.categoryHint,
     };
-  });
+  }).filter((it) => it.url && /^https?:\/\//i.test(it.url));
 }
 
 export async function fetchAllFeeds<T extends { id: string; name: string; url: string; category?: string }>(
   feeds: T[],
   options?: { perFeedLimit?: number; revalidateSeconds?: number },
 ) {
-  const results = await Promise.all(
+  const perFeed = options?.perFeedLimit ?? 12;
+  const revalidateSeconds = options?.revalidateSeconds ?? 0;
+
+  const results = await Promise.allSettled(
     feeds.map((f) =>
       fetchRssItems({
         sourceId: f.id,
         sourceName: f.name,
         url: f.url,
         categoryHint: f.category,
-        limit: options?.perFeedLimit ?? 12,
-        revalidateSeconds: options?.revalidateSeconds ?? 600,
+        limit: perFeed,
+        revalidateSeconds,
       }),
     ),
   );
 
-  const merged = results.flat();
+  const merged = results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
   merged.sort((a, b) => {
     const ad = a.publishedAt ? Date.parse(a.publishedAt) : 0;
     const bd = b.publishedAt ? Date.parse(b.publishedAt) : 0;

@@ -15,8 +15,14 @@ export const FEEDS: RssFeed[] = [
     category: "politics",
   },
   {
+    id: "bbc-world",
+    name: "BBC World",
+    url: "https://feeds.bbci.co.uk/news/world/rss.xml",
+    category: "politics",
+  },
+  {
     id: "bbc-climate",
-    name: "BBC Climate",
+    name: "BBC Science & Environment",
     url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
     category: "climate-change",
   },
@@ -27,9 +33,9 @@ export const FEEDS: RssFeed[] = [
     category: "environment",
   },
   {
-    id: "reliefweb-climate",
-    name: "ReliefWeb Climate",
-    url: "https://reliefweb.int/updates/rss.xml?search=disaster_type.exact:%22Drought%22%20OR%20disaster_type.exact:%22Flood%22%20OR%20theme.exact:%22Climate%20Change%20and%20Environment%22",
+    id: "reliefweb-updates",
+    name: "ReliefWeb Updates",
+    url: "https://reliefweb.int/updates/rss.xml",
     category: "climate-change",
   },
   {
