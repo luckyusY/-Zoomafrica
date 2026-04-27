@@ -19,6 +19,12 @@ export function SiteHeader() {
 
         <nav className="hidden md:flex items-center gap-6">
           <Link
+            href="/news"
+            className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.22em] text-zinc-300 hover:text-white"
+          >
+            News Wire
+          </Link>
+          <Link
             href="/latest"
             className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.22em] text-zinc-300 hover:text-white"
           >

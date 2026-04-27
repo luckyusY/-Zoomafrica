@@ -2,10 +2,16 @@ import Link from "next/link";
 import { ArrowRight, Flame, Leaf, Trophy } from "lucide-react";
 import { getFeaturedPosts, getLatestPosts } from "@/lib/posts";
 import { CATEGORIES } from "@/lib/taxonomy";
+import { FEEDS } from "@/lib/feeds";
+import { fetchAllFeeds } from "@/lib/rss";
 
-export default function Home() {
+export default async function Home() {
   const featured = getFeaturedPosts();
   const latest = getLatestPosts(9);
+  const wire = await fetchAllFeeds(FEEDS.slice(0, 3), {
+    perFeedLimit: 6,
+    revalidateSeconds: 600,
+  });
 
   return (
     <div className="flex-1 za-grain">
@@ -77,7 +83,53 @@ export default function Home() {
                     {c.label}
                   </Link>
                 ))}
+                <Link
+                  href="/news"
+                  className="rounded-full border border-[color:var(--za-red)]/40 bg-[rgba(225,6,0,0.10)] px-3 py-1.5 text-xs tracking-wide text-white hover:bg-[rgba(225,6,0,0.16)] transition"
+                >
+                  <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--za-red)] shadow-[0_0_0_6px_rgba(225,6,0,0.12)]" />
+                  Live News Wire
+                </Link>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 sm:px-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center rounded-full bg-[color:var(--za-red)] px-3 py-1.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.28em] text-white">
+                  Breaking
+                </span>
+                <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-zinc-300">
+                  Live headlines (RSS)
+                </p>
+              </div>
+              <Link
+                href="/news"
+                className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.28em] text-white"
+              >
+                <span className="za-link">Open wire</span>
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {wire.slice(0, 6).map((it) => (
+                <Link
+                  key={`${it.sourceId}-${it.id}`}
+                  href={it.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group rounded-xl border border-white/10 bg-black/20 px-4 py-3 hover:bg-white/5 transition"
+                >
+                  <p className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.28em] text-zinc-400">
+                    {it.sourceName}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-zinc-100 group-hover:text-white">
+                    {it.title}
+                  </p>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
