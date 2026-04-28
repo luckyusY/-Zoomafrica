@@ -64,15 +64,12 @@ body {
 }
 
 /* Breaking ticker */
-.ticker-wrap {
-  overflow: hidden;
-  white-space: nowrap;
-}
 .ticker-text {
   display: inline-block;
-  animation: ticker 30s linear infinite;
+  animation: ticker 40s linear infinite;
+  white-space: nowrap;
 }
 @keyframes ticker {
-  0%   { transform: translateX(100%); }
+  0%   { transform: translateX(40%); }
   100% { transform: translateX(-100%); }
 }
