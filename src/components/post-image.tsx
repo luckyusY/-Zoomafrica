@@ -7,11 +7,13 @@ export function PostImage({
   alt,
   className,
   eager,
+  style,
 }: {
   src: string;
   alt: string;
   className?: string;
   eager?: boolean;
+  style?: React.CSSProperties;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -23,6 +25,7 @@ export function PostImage({
       alt={alt}
       loading={eager ? "eager" : "lazy"}
       className={className}
+      style={style}
       onError={() => setFailed(true)}
     />
   );
