@@ -1,78 +1,134 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { CATEGORIES } from "@/lib/taxonomy";
 
 export function SiteHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <header className="sticky top-0 z-50 bg-[#0c0c0c] shadow-md">
+    <>
+      <header className="sticky top-0 z-50 border-b border-[#333] bg-[#0c0c0c]">
+        <div className="mx-auto flex w-full max-w-7xl items-center gap-1 px-3 py-2.5 sm:px-4">
 
-      {/* ── Main nav bar ── */}
-      <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-2.5 sm:px-6">
-
-        {/* ZOOM badge logo — CNN-style red badge */}
-        <Link href="/" className="shrink-0 flex items-center gap-2.5">
-          <span className="flex h-9 items-center rounded-[3px] bg-[#cc0000] px-2.5 font-[family-name:var(--font-display)] text-[22px] leading-none tracking-wider text-white">
-            ZOOM
-          </span>
-          <span className="hidden font-[family-name:var(--font-display)] text-[18px] leading-none tracking-widest text-white sm:block">
-            AFRICA
-          </span>
-        </Link>
-
-        {/* Category links — scrollable, like CNN's top nav */}
-        <nav className="ml-3 flex flex-1 items-center gap-0 overflow-x-auto">
-          {[
-            { label: "Home", href: "/" },
-            { label: "Politics", href: "/category/politics" },
-            { label: "Environment", href: "/category/environment" },
-            { label: "Health", href: "/category/health" },
-            { label: "Sports", href: "/category/sports" },
-            { label: "Energy", href: "/category/energy" },
-            { label: "Travel", href: "/category/tourism" },
-            { label: "Agriculture", href: "/category/agriculture" },
-            { label: "More ›", href: "/latest" },
-          ].map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              className="shrink-0 whitespace-nowrap px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-300 hover:text-white transition"
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Right actions */}
-        <div className="ml-auto flex shrink-0 items-center gap-3">
-          <Link
-            href="/latest"
-            className="hidden text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-400 hover:text-white transition sm:block"
+          {/* Hamburger */}
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Menu"
+            className="flex shrink-0 flex-col gap-[5px] p-2 group"
           >
-            Latest
-          </Link>
-          <Link
-            href="/news"
-            className="flex items-center gap-1.5 rounded-[3px] bg-[#cc0000] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.14em] text-white hover:bg-[#aa0000] transition"
-          >
-            <span className="hidden h-1.5 w-1.5 animate-pulse rounded-full bg-white sm:inline-block" />
-            Live TV
-          </Link>
-        </div>
-      </div>
+            <span className="block h-[2px] w-5 bg-white group-hover:bg-[#cc0000] transition" />
+            <span className="block h-[2px] w-5 bg-white group-hover:bg-[#cc0000] transition" />
+            <span className="block h-[2px] w-5 bg-white group-hover:bg-[#cc0000] transition" />
+          </button>
 
-      {/* ── Secondary category strip ── */}
-      <div className="border-t border-white/10 bg-[#151515]">
-        <div className="mx-auto flex w-full max-w-7xl items-center overflow-x-auto px-4 sm:px-6">
-          {CATEGORIES.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/category/${c.slug}`}
-              className="shrink-0 whitespace-nowrap border-b-2 border-transparent px-3 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500 hover:border-[#cc0000] hover:text-white transition"
-            >
-              {c.label}
+          {/* Logo */}
+          <Link href="/" className="ml-1 shrink-0 flex items-center gap-0">
+            <span className="flex h-8 items-center rounded-[2px] bg-[#cc0000] px-2 font-[family-name:var(--font-display)] text-[18px] leading-none tracking-wider text-white">
+              ZOOM
+            </span>
+          </Link>
+
+          {/* Primary nav */}
+          <nav className="ml-3 hidden flex-1 items-center gap-0 overflow-x-auto lg:flex">
+            {[
+              ["Africa", "/"],
+              ["Politics", "/category/politics"],
+              ["Business", "/category/agriculture"],
+              ["Health", "/category/health"],
+              ["Environment", "/category/environment"],
+              ["Style", "/category/education"],
+              ["Travel", "/category/tourism"],
+              ["Sports", "/category/sports"],
+              ["More", "/latest"],
+            ].map(([label, href]) => (
+              <Link
+                key={label}
+                href={href}
+                className="shrink-0 whitespace-nowrap px-2.5 py-1 text-[13px] font-bold text-white hover:text-[#cc0000] transition"
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Tablet nav (condensed) */}
+          <nav className="ml-2 hidden flex-1 items-center gap-0 overflow-x-auto sm:flex lg:hidden">
+            {[
+              ["Africa", "/"],
+              ["Politics", "/category/politics"],
+              ["Health", "/category/health"],
+              ["Sports", "/category/sports"],
+              ["More", "/latest"],
+            ].map(([label, href]) => (
+              <Link key={label} href={href} className="shrink-0 whitespace-nowrap px-2 py-1 text-[12px] font-bold text-white hover:text-[#cc0000] transition">
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Right actions */}
+          <div className="ml-auto flex shrink-0 items-center gap-3">
+            <Link href="/news" className="hidden items-center gap-1.5 sm:flex text-[12px] font-bold text-white hover:text-[#cc0000] transition">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#cc0000]" />
+              Watch
             </Link>
-          ))}
+            <Link href="/latest" className="hidden text-[12px] font-bold text-white hover:text-[#cc0000] transition sm:block">
+              Listen
+            </Link>
+            {/* Search icon */}
+            <button className="text-white hover:text-[#cc0000] transition p-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+              </svg>
+            </button>
+            <Link
+              href="/about"
+              className="rounded border border-white/30 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-white hover:text-[#0c0c0c] transition"
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* ── Slide-down mobile / mega menu ── */}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60"
+          onClick={() => setMenuOpen(false)}
+        >
+          <div
+            className="absolute left-0 top-0 h-full w-72 overflow-y-auto bg-[#0c0c0c] px-6 py-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={() => setMenuOpen(false)} className="mb-6 text-white text-2xl leading-none">✕</button>
+            <Link href="/" onClick={() => setMenuOpen(false)} className="mb-6 flex items-center gap-2">
+              <span className="flex h-8 items-center rounded-[2px] bg-[#cc0000] px-2 font-[family-name:var(--font-display)] text-[18px] leading-none tracking-wider text-white">ZOOM</span>
+              <span className="font-[family-name:var(--font-display)] text-[16px] tracking-widest text-white">AFRICA</span>
+            </Link>
+            <nav className="flex flex-col gap-0 divide-y divide-white/10">
+              {CATEGORIES.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/category/${c.slug}`}
+                  onClick={() => setMenuOpen(false)}
+                  className="py-3 text-[13px] font-bold uppercase tracking-wider text-zinc-300 hover:text-[#cc0000] transition"
+                >
+                  {c.label}
+                </Link>
+              ))}
+              <Link href="/news" onClick={() => setMenuOpen(false)} className="py-3 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wider text-[#cc0000]">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[#cc0000]" /> Live Wire
+              </Link>
+              <Link href="/latest" onClick={() => setMenuOpen(false)} className="py-3 text-[13px] font-bold uppercase tracking-wider text-zinc-300 hover:text-[#cc0000] transition">Latest</Link>
+              <Link href="/about" onClick={() => setMenuOpen(false)} className="py-3 text-[13px] font-bold uppercase tracking-wider text-zinc-300 hover:text-[#cc0000] transition">About</Link>
+              <Link href="/contact" onClick={() => setMenuOpen(false)} className="py-3 text-[13px] font-bold uppercase tracking-wider text-zinc-300 hover:text-[#cc0000] transition">Contact</Link>
+            </nav>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
