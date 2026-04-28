@@ -1,60 +1,57 @@
 import Link from "next/link";
-
 import { CATEGORIES } from "@/lib/taxonomy";
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[rgba(7,7,10,0.72)] backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-        <div className="flex items-baseline gap-3">
-          <Link href="/" className="group inline-flex items-baseline gap-2">
-            <span className="font-[family-name:var(--font-display)] text-3xl tracking-wide leading-none">
-              Zoom<span className="text-[color:var(--za-red)]">Africa</span>
-            </span>
-            <span className="hidden sm:inline font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.28em] text-zinc-400 group-hover:text-zinc-200 transition">
-              Africa in Focus
-            </span>
-          </Link>
-        </div>
+    <header className="sticky top-0 z-50 bg-[#07070a] shadow-[0_1px_0_rgba(255,255,255,0.08)]">
 
-        <nav className="hidden md:flex items-center gap-6">
+      {/* ── Brand + primary nav ── */}
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
+        <Link href="/" className="shrink-0">
+          <span className="font-[family-name:var(--font-display)] text-3xl leading-none tracking-wide">
+            Zoom<span className="text-[color:var(--za-red)]">Africa</span>
+          </span>
+        </Link>
+
+        <nav className="ml-auto hidden items-center gap-6 md:flex">
           <Link
             href="/news"
-            className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.22em] text-zinc-300 hover:text-white"
+            className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--za-red)] hover:text-red-400 transition"
           >
-            News Wire
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[color:var(--za-red)]" />
+            Live Wire
           </Link>
           <Link
             href="/latest"
-            className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.22em] text-zinc-300 hover:text-white"
+            className="text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-300 hover:text-white transition"
           >
             Latest
           </Link>
           <Link
             href="/about"
-            className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.22em] text-zinc-300 hover:text-white"
+            className="text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-300 hover:text-white transition"
           >
             About
           </Link>
           <Link
             href="/contact"
-            className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.22em] text-zinc-300 hover:text-white"
+            className="text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-300 hover:text-white transition"
           >
             Contact
           </Link>
         </nav>
       </div>
 
-      <div className="border-t border-white/10">
-        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 py-3 sm:-mx-8 sm:px-8">
+      {/* ── Category nav bar ── */}
+      <div className="border-t border-white/8 bg-[#0e0e12]">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+          <div className="-mx-4 flex items-center gap-0 overflow-x-auto sm:-mx-6">
             {CATEGORIES.map((c) => (
               <Link
                 key={c.slug}
                 href={`/category/${c.slug}`}
-                className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] uppercase tracking-[0.24em] text-zinc-200 hover:border-white/20 hover:bg-white/10 transition"
+                className="shrink-0 border-b-2 border-transparent px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-400 hover:border-[color:var(--za-red)] hover:text-white transition whitespace-nowrap"
               >
-                <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--za-red)]" />
                 {c.label}
               </Link>
             ))}
@@ -64,4 +61,3 @@ export function SiteHeader() {
     </header>
   );
 }
-
