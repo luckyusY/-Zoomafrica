@@ -46,6 +46,18 @@ export default function PostPage({
           <div className="mt-8 h-px w-full bg-white/10" />
         </header>
 
+        {post.image && (
+          <div className="mt-8 overflow-hidden rounded-2xl border border-white/10">
+            <img
+              src={post.image}
+              alt={post.title}
+              loading="eager"
+              className="h-72 w-full object-cover sm:h-96"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).parentElement!.style.display = "none"; }}
+            />
+          </div>
+        )}
+
         <article className="prose prose-invert prose-zinc max-w-none pb-16 pt-8 prose-headings:font-[family-name:var(--font-display)] prose-headings:tracking-wide prose-p:leading-7 prose-a:text-white prose-a:no-underline prose-a:font-medium">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}

@@ -131,9 +131,20 @@ export default async function Home() {
                 <Link
                   key={p.slug}
                   href={`/post/${p.slug}`}
-                  className="group block rounded-2xl border border-white/10 bg-white/5 px-5 py-5 hover:bg-white/7.5 transition"
+                  className="group block rounded-2xl border border-white/10 bg-white/5 overflow-hidden hover:bg-white/7.5 transition"
                 >
-                  <div className="flex items-center justify-between gap-4">
+                  {p.image && (
+                    <div className="h-44 w-full overflow-hidden">
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.02] transition duration-500"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between gap-4 px-5 py-5">
                     <div className="min-w-0">
                       <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.28em] text-zinc-400">
                         {p.categoryLabel} • {p.dateLabel}
@@ -170,14 +181,27 @@ export default async function Home() {
                   <Link
                     key={p.slug}
                     href={`/post/${p.slug}`}
-                    className="group block border-b border-white/10 pb-4 last:border-b-0 last:pb-0"
+                    className="group flex items-start gap-3 border-b border-white/10 pb-4 last:border-b-0 last:pb-0"
                   >
-                    <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.28em] text-zinc-400">
-                      {p.categoryLabel}
-                    </p>
-                    <p className="mt-1 text-sm leading-6 text-zinc-200 group-hover:text-white">
-                      {p.title}
-                    </p>
+                    {p.image && (
+                      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-white/10">
+                        <img
+                          src={p.image}
+                          alt=""
+                          loading="lazy"
+                          className="h-full w-full object-cover opacity-75 group-hover:opacity-100 transition"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).parentElement!.style.display = "none"; }}
+                        />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.28em] text-zinc-400">
+                        {p.categoryLabel}
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-zinc-200 group-hover:text-white">
+                        {p.title}
+                      </p>
+                    </div>
                   </Link>
                 ))}
               </div>

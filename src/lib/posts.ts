@@ -13,6 +13,7 @@ export type PostFrontmatter = {
   category: string; // slug
   featured?: boolean;
   excerpt?: string;
+  image?: string;
 };
 
 export type Post = {
@@ -26,6 +27,7 @@ export type Post = {
   excerpt: string;
   minutes: number;
   content: string;
+  image: string;
 };
 
 const POSTS_DIR = path.join(process.cwd(), "src", "content", "posts");
@@ -57,6 +59,7 @@ export function getAllPosts(): Post[] {
       fm.excerpt,
       parsed.content.trim().slice(0, 140) + "…",
     );
+    const image = safeString(fm.image, "");
 
     const cat = getCategoryBySlug(category);
     const categoryLabel = cat?.label ?? category;
@@ -74,6 +77,7 @@ export function getAllPosts(): Post[] {
       excerpt,
       minutes,
       content: parsed.content,
+      image,
     } satisfies Post;
   });
 
