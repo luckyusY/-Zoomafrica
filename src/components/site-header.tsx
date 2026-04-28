@@ -24,9 +24,12 @@ export function SiteHeader() {
           </button>
 
           {/* Logo */}
-          <Link href="/" className="ml-1 shrink-0 flex items-center gap-0">
+          <Link href="/" className="ml-1 shrink-0 flex items-center gap-2">
             <span className="flex h-8 items-center rounded-[2px] bg-[#cc0000] px-2 font-[family-name:var(--font-display)] text-[18px] leading-none tracking-wider text-white">
               ZOOM
+            </span>
+            <span className="font-[family-name:var(--font-display)] text-[18px] leading-none tracking-wider text-white">
+              AFRICA
             </span>
           </Link>
 
