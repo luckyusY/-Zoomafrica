@@ -5,6 +5,7 @@ import { CATEGORIES } from "@/lib/taxonomy";
 import { FEEDS } from "@/lib/feeds";
 import { fetchAllFeeds } from "@/lib/rss";
 import { format } from "date-fns";
+import { PostImage } from "@/components/post-image";
 
 export const revalidate = 0;
 
@@ -135,12 +136,10 @@ export default async function Home() {
                 >
                   {p.image && (
                     <div className="h-44 w-full overflow-hidden">
-                      <img
+                      <PostImage
                         src={p.image}
                         alt={p.title}
-                        loading="lazy"
                         className="h-full w-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.02] transition duration-500"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                       />
                     </div>
                   )}
@@ -185,12 +184,10 @@ export default async function Home() {
                   >
                     {p.image && (
                       <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-white/10">
-                        <img
+                        <PostImage
                           src={p.image}
                           alt=""
-                          loading="lazy"
                           className="h-full w-full object-cover opacity-75 group-hover:opacity-100 transition"
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).parentElement!.style.display = "none"; }}
                         />
                       </div>
                     )}

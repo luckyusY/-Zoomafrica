@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { getCategoryBySlug } from "@/lib/taxonomy";
+import { PostImage } from "@/components/post-image";
 
 export function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
@@ -48,12 +49,11 @@ export default function PostPage({
 
         {post.image && (
           <div className="mt-8 overflow-hidden rounded-2xl border border-white/10">
-            <img
+            <PostImage
               src={post.image}
               alt={post.title}
-              loading="eager"
+              eager
               className="h-72 w-full object-cover sm:h-96"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).parentElement!.style.display = "none"; }}
             />
           </div>
         )}
